@@ -1,0 +1,415 @@
+Scenario 1: Pointers to Class Members
+You’re developing a vehicle management system with a class Vehicle that has several data members (for example, an integer speed and a float fuelLevel) and a member function displayStatus(). Parts of the system need to dynamically modify and display these attributes using pointers to class members.
+
+(a) How would you declare a pointer to the speed data member and a pointer to the member function displayStatus()?
+(b) Provide a code snippet that uses these pointers to set the speed of a Vehicle object and then calls displayStatus().
+(c) What are some potential pitfalls when using pointers to class members, and how can they be mitigated? 
+
+(a) Declaring Pointers to Class Members
+
+In C++, pointers to class members have a special syntax.
+
+A pointer to a data member is declared as:
+
+int Vehicle::*ptrToSpeed;
+
+A pointer to a member function is declared as:
+
+void (Vehicle::*ptrToDisplay)();
+
+
+(b) Code Snippet Using These Pointers
+
+#include <iostream>
+using namespace std;
+
+class Vehicle {
+public:
+    int speed;
+    float fuelLevel;
+
+    void displayStatus() {
+        cout << "Speed: " << speed << " km/h, Fuel Level: " << fuelLevel << " liters" << endl;
+    }
+};
+
+int main() {
+    Vehicle car;
+
+    // Pointer to the speed data member
+    int Vehicle::*ptrToSpeed = &Vehicle::speed;
+
+    // Pointer to the displayStatus member function
+    void (Vehicle::*ptrToDisplay)() = &Vehicle::displayStatus;
+
+    // Modify the speed via the pointer
+    car.*ptrToSpeed = 80;  // Set speed to 80
+    car.fuelLevel = 50.5;  // Directly setting fuel level for demonstration
+
+    // Call the display function via the pointer
+    (car.*ptrToDisplay)();
+
+    return 0;
+}
+
+(c) Potential Pitfalls and Mitigation
+
+1. Syntax Complexity
+
+Pointers to class members have an unusual syntax (object.*pointer or objectPtr->*pointer), which can be confusing.
+
+Mitigation: Use typedef or using to make the syntax more readable.
+
+
+
+2. Null Pointer Dereferencing
+
+If an object pointer is nullptr, dereferencing the member pointer leads to undefined behavior.
+
+Mitigation: Always check if the object is valid before accessing members.
+
+
+
+3. Accessing Private Members
+
+Pointers to members respect access control, so attempting to access a private member directly will cause a compilation error.
+
+Mitigation: Use getters/setters for private members.
+
+
+
+4. Polymorphism Issues
+
+
+
+2 QUESTION
+
+Imagine you are designing a Student class. In this class, the student’s name should be directly accessible (public), but the id should be private and accessible only through a getter function.
+
+(a) How would you declare the Student class with a public name member and a private id member?
+(b) Provide a code snippet that demonstrates creating a Student object, directly modifying the name, and accessing the id via its getter function.
+(c) Why might a designer choose to allow direct access to some members while restricting others?
+SOLUTION
+
+class Student {
+public:
+    std::string name;  // Publicly accessible
+
+    // Constructor
+    Student(const std::string& studentName, int studentId) : name(studentName), id(studentId) {}
+
+    // Getter for id
+    int getId() const {
+        return id;
+    }
+
+private:
+    int id;  // Private member
+};
+
+B) #include <iostream>
+using namespace std;
+
+class Student {
+public:
+    string name;
+
+    // Constructor
+    Student(const string& studentName, int studentId) : name(studentName), id(studentId) {}
+
+    // Getter for id
+    int getId() const {
+        return id;
+    }
+
+private:
+    int id;
+};
+
+int main() {
+    // Creating a Student object
+    Student student1("Alice", 12345);
+
+    // Modifying the public name
+    student1.name = "Bob";
+
+    // Accessing the private id using the getter
+    cout << "Student Name: " << student1.name << endl;
+    cout << "Student ID: " << student1.getId() << endl;
+
+    return 0;
+}
+
+
+Question:3
+
+Design a C++ class named BankAccount with the following attributes:
+accountNumber (integer)
+balance (double)
+accountHolderName (string)
+Methods:
+deposit(amount): Adds the specified amount to the balance.
+withdraw(amount): Deducts the specified amount from the balance, if sufficient funds are available.
+displayBalance(): Displays the current balance.
+Write a program that:
+Creates a BankAccount object.
+Prompts the user to enter account details and initial balance.
+Allows the user to perform deposit and withdrawal operations.
+Displays the final balance
+
+ANSWER ) 
+
+#include <iostream>
+using namespace std;
+
+class BankAccount {
+private:
+    int accountNumber;
+    double balance;
+    string accountHolderName;
+
+public:
+    // Constructor to initialize account details
+    BankAccount(int accNum, double initialBalance, const string& holderName)
+        : accountNumber(accNum), balance(initialBalance), accountHolderName(holderName) {}
+
+    // Deposit method
+    void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            cout << "Deposit successful. New balance: $" << balance << endl;
+        } else {
+            cout << "Invalid deposit amount. Please enter a positive value." << endl;
+        }
+    }
+
+    // Withdraw method
+    void withdraw(double amount) {
+        if (amount > 0 && amount <= balance) {
+            balance -= amount;
+            cout << "Withdrawal successful. New balance: $" << balance << endl;
+        } else if (amount > balance) {
+            cout << "Insufficient funds. Withdrawal failed." << endl;
+        } else {
+            cout << "Invalid withdrawal amount. Please enter a positive value." << endl;
+        }
+    }
+
+    // Display balance
+    void displayBalance() const {
+        cout << "Current balance: $" << balance << endl;
+    }
+};
+
+int main() {
+    int accNum;
+    double initialBalance;
+    string holderName;
+
+    // Get user input for account details
+    cout << "Enter account number: ";
+    cin >> accNum;
+    cin.ignore();  // Clear input buffer
+    cout << "Enter account holder name: ";
+    getline(cin, holderName);
+    cout << "Enter initial balance: ";
+    cin >> initialBalance;
+
+    // Create a BankAccount object
+    BankAccount myAccount(accNum, initialBalance, holderName);
+
+    int choice;
+    double amount;
+
+    // Banking menu
+    do {
+        cout << "\nBanking Menu:\n";
+        cout << "1. Deposit\n2. Withdraw\n3. Display Balance\n4. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter deposit amount: ";
+                cin >> amount;
+                myAccount.deposit(amount);
+                break;
+            case 2:
+                cout << "Enter withdrawal amount: ";
+                cin >> amount;
+                myAccount.withdraw(amount);
+                break;
+            case 3:
+                myAccount.displayBalance();
+                break;
+            case 4:
+                cout << "Exiting program. Thank you!" << endl;
+                break;
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+        }
+    } while (choice != 4);
+
+    return 0;
+}
+
+
+QUESTION) 4
+
+Design a C++ class named Book with the following attributes:
+title (string)
+author (string)
+isbn (string)
+available (boolean)
+Design a class named Library with the following attributes:
+books (an array or vector of Book objects)
+Methods:
+addBook(book): Adds a new book to the library.
+searchBookByTitle(title): Searches for a book based on its title.
+borrowBook(isbn): Marks a book as unavailable if it's available.
+returnBook(isbn): Marks a book as available.
+
+ANSWER) 
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// Book class definition
+class Book {
+public:
+    string title;
+    string author;
+    string isbn;
+    bool available;
+
+    // Constructor
+    Book(string t, string a, string i)
+        : title(t), author(a), isbn(i), available(true) {}
+
+    // Display book details
+    void display() const {
+        cout << "Title: " << title << ", Author: " << author 
+             << ", ISBN: " << isbn << ", Available: " << (available ? "Yes" : "No") << endl;
+    }
+};
+
+// Library class definition
+class Library {
+private:
+    vector<Book> books;
+
+public:
+    // Add a new book to the library
+    void addBook(const Book& book) {
+        books.push_back(book);
+        cout << "Book added: " << book.title << endl;
+    }
+
+    // Search for a book by title
+    void searchBookByTitle(const string& title) const {
+        for (const auto& book : books) {
+            if (book.title == title) {
+                book.display();
+                return;
+            }
+        }
+        cout << "Book with title '" << title << "' not found.\n";
+    }
+
+    // Borrow a book using ISBN
+    void borrowBook(const string& isbn) {
+        for (auto& book : books) {
+            if (book.isbn == isbn) {
+                if (book.available) {
+                    book.available = false;
+                    cout << "You have borrowed: " << book.title << endl;
+                } else {
+                    cout << "Sorry, the book is currently unavailable.\n";
+                }
+                return;
+            }
+        }
+        cout << "Book with ISBN " << isbn << " not found.\n";
+    }
+
+    // Return a book using ISBN
+    void returnBook(const string& isbn) {
+        for (auto& book : books) {
+            if (book.isbn == isbn) {
+                if (!book.available) {
+                    book.available = true;
+                    cout << "You have returned: " << book.title << endl;
+                } else {
+                    cout << "This book was not borrowed.\n";
+                }
+                return;
+            }
+        }
+        cout << "Book with ISBN " << isbn << " not found.\n";
+    }
+
+    // Display all books in the library
+    void displayBooks() const {
+        if (books.empty()) {
+            cout << "No books in the library.\n";
+            return;
+        }
+        for (const auto& book : books) {
+            book.display();
+        }
+    }
+};
+
+// Main function
+int main() {
+    Library library;
+    int choice;
+    string title, author, isbn;
+
+    do {
+        cout << "\nLibrary Menu:\n";
+        cout << "1. Add Book\n2. Search by Title\n3. Borrow Book\n4. Return Book\n5. Display Books\n6. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        cin.ignore();  // Clear input buffer
+
+        switch (choice) {
+            case 1:
+                cout << "Enter title: ";
+                getline(cin, title);
+                cout << "Enter author: ";
+                getline(cin, author);
+                cout << "Enter ISBN: ";
+                getline(cin, isbn);
+                library.addBook(Book(title, author, isbn));
+                break;
+            case 2:
+                cout << "Enter title to search: ";
+                getline(cin, title);
+                library.searchBookByTitle(title);
+                break;
+            case 3:
+                cout << "Enter ISBN to borrow: ";
+                getline(cin, isbn);
+                library.borrowBook(isbn);
+                break;
+            case 4:
+                cout << "Enter ISBN to return: ";
+                getline(cin, isbn);
+                library.returnBook(isbn);
+                break;
+            case 5:
+                library.displayBooks();
+                break;
+            case 6:
+                cout << "Exiting program. Thank you!\n";
+                break;
+            default:
+                cout << "Invalid choice. Please try again.\n";
+        }
+    } while (choice != 6);
+
+    return 0;
+}
+
